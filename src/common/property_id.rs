@@ -265,6 +265,8 @@ pub enum PropertyId {
     /// SpeechLogFilename is the file name to write logs.
     SpeechLogFilename = 9001,
 
+    SpeechSegmentationSilenceTimeoutMs = 9002,
+
     /// ConversationApplicationID is the identifier used to connect to the backend service.
     ConversationApplicationID = 10000,
 
@@ -370,6 +372,7 @@ impl PropertyId {
             PropertyId::AudioConfigPlaybackBufferLengthInMs => 8006,
 
             PropertyId::SpeechLogFilename => 9001,
+            PropertyId::SpeechSegmentationSilenceTimeoutMs => 9002,
 
             PropertyId::ConversationApplicationID => 10000,
             PropertyId::ConversationDialogType => 10001,
