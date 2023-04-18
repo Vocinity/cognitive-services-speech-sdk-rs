@@ -18,6 +18,10 @@ pub const __USE_POSIX199506: u32 = 1;
 pub const __USE_XOPEN2K: u32 = 1;
 pub const __USE_XOPEN2K8: u32 = 1;
 pub const _ATFILE_SOURCE: u32 = 1;
+pub const __WORDSIZE: u32 = 64;
+pub const __WORDSIZE_TIME64_COMPAT32: u32 = 1;
+pub const __SYSCALL_WORDSIZE: u32 = 64;
+pub const __TIMESIZE: u32 = 64;
 pub const __USE_MISC: u32 = 1;
 pub const __USE_ATFILE: u32 = 1;
 pub const __USE_FORTIFY_LEVEL: u32 = 0;
@@ -25,31 +29,31 @@ pub const __GLIBC_USE_DEPRECATED_GETS: u32 = 0;
 pub const __GLIBC_USE_DEPRECATED_SCANF: u32 = 0;
 pub const _STDC_PREDEF_H: u32 = 1;
 pub const __STDC_IEC_559__: u32 = 1;
+pub const __STDC_IEC_60559_BFP__: u32 = 201404;
 pub const __STDC_IEC_559_COMPLEX__: u32 = 1;
+pub const __STDC_IEC_60559_COMPLEX__: u32 = 201404;
 pub const __STDC_ISO_10646__: u32 = 201706;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
-pub const __GLIBC_MINOR__: u32 = 31;
+pub const __GLIBC_MINOR__: u32 = 36;
 pub const _SYS_CDEFS_H: u32 = 1;
 pub const __glibc_c99_flexarr_available: u32 = 1;
-pub const __WORDSIZE: u32 = 64;
-pub const __WORDSIZE_TIME64_COMPAT32: u32 = 1;
-pub const __SYSCALL_WORDSIZE: u32 = 64;
-pub const __LONG_DOUBLE_USES_FLOAT128: u32 = 0;
+pub const __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI: u32 = 0;
 pub const __HAVE_GENERIC_SELECTION: u32 = 1;
 pub const __GLIBC_USE_LIB_EXT2: u32 = 0;
 pub const __GLIBC_USE_IEC_60559_BFP_EXT: u32 = 0;
 pub const __GLIBC_USE_IEC_60559_BFP_EXT_C2X: u32 = 0;
+pub const __GLIBC_USE_IEC_60559_EXT: u32 = 0;
 pub const __GLIBC_USE_IEC_60559_FUNCS_EXT: u32 = 0;
 pub const __GLIBC_USE_IEC_60559_FUNCS_EXT_C2X: u32 = 0;
 pub const __GLIBC_USE_IEC_60559_TYPES_EXT: u32 = 0;
 pub const _BITS_TYPES_H: u32 = 1;
-pub const __TIMESIZE: u32 = 64;
 pub const _BITS_TYPESIZES_H: u32 = 1;
 pub const __OFF_T_MATCHES_OFF64_T: u32 = 1;
 pub const __INO_T_MATCHES_INO64_T: u32 = 1;
 pub const __RLIM_T_MATCHES_RLIM64_T: u32 = 1;
 pub const __STATFS_MATCHES_STATFS64: u32 = 1;
+pub const __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64: u32 = 1;
 pub const __FD_SETSIZE: u32 = 1024;
 pub const _BITS_TIME64_H: u32 = 1;
 pub const _BITS_WCHAR_H: u32 = 1;
@@ -256,9 +260,9 @@ pub const __AZAC_TRACE_LEVEL_INFO: u32 = 8;
 pub const __AZAC_TRACE_LEVEL_WARNING: u32 = 4;
 pub const __AZAC_TRACE_LEVEL_ERROR: u32 = 2;
 pub const __AZAC_TRACE_LEVEL_VERBOSE: u32 = 16;
+pub const __bool_true_false_are_defined: u32 = 1;
 pub const true_: u32 = 1;
 pub const false_: u32 = 0;
-pub const __bool_true_false_are_defined: u32 = 1;
 pub const __GNUC_VA_LIST: u32 = 1;
 pub const SPX_NOERROR: u32 = 0;
 pub const __SPX_TRACE_LEVEL_INFO: u32 = 8;
@@ -381,6 +385,7 @@ pub type __id_t = ::std::os::raw::c_uint;
 pub type __time_t = ::std::os::raw::c_long;
 pub type __useconds_t = ::std::os::raw::c_uint;
 pub type __suseconds_t = ::std::os::raw::c_long;
+pub type __suseconds64_t = ::std::os::raw::c_long;
 pub type __daddr_t = ::std::os::raw::c_int;
 pub type __key_t = ::std::os::raw::c_int;
 pub type __clockid_t = ::std::os::raw::c_int;
@@ -633,6 +638,18 @@ extern "C" {
         level: *const ::std::os::raw::c_char,
     );
 }
+extern "C" {
+    pub fn diagnostics_is_log_level_enabled(level: ::std::os::raw::c_int) -> bool;
+}
+extern "C" {
+    pub fn diagnostics_get_handle_count() -> size_t;
+}
+extern "C" {
+    pub fn diagnostics_get_handle_info() -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn diagnostics_free_string(value: *const ::std::os::raw::c_char) -> AZACHR;
+}
 pub type const_char_ptr = *const ::std::os::raw::c_char;
 extern "C" {
     pub fn error_get_message(errorHandle: AZAC_HANDLE) -> const_char_ptr;
@@ -748,8 +765,7 @@ pub const PropertyId_SpeechServiceConnection_VoicesListEndpoint: PropertyId = 31
 pub const PropertyId_SpeechServiceConnection_InitialSilenceTimeoutMs: PropertyId = 3200;
 pub const PropertyId_SpeechServiceConnection_EndSilenceTimeoutMs: PropertyId = 3201;
 pub const PropertyId_SpeechServiceConnection_EnableAudioLogging: PropertyId = 3202;
-pub const PropertyId_SpeechServiceConnection_SingleLanguageIdPriority: PropertyId = 3203;
-pub const PropertyId_SpeechServiceConnection_ContinuousLanguageIdPriority: PropertyId = 3204;
+pub const PropertyId_SpeechServiceConnection_LanguageIdMode: PropertyId = 3205;
 pub const PropertyId_SpeechServiceConnection_AutoDetectSourceLanguages: PropertyId = 3300;
 pub const PropertyId_SpeechServiceConnection_AutoDetectSourceLanguageResult: PropertyId = 3301;
 pub const PropertyId_SpeechServiceResponse_RequestDetailedResultTrueFalse: PropertyId = 4000;
@@ -764,9 +780,13 @@ pub const PropertyId_SpeechServiceResponse_TranslationRequestStablePartialResult
 pub const PropertyId_SpeechServiceResponse_JsonResult: PropertyId = 5000;
 pub const PropertyId_SpeechServiceResponse_JsonErrorDetails: PropertyId = 5001;
 pub const PropertyId_SpeechServiceResponse_RecognitionLatencyMs: PropertyId = 5002;
+pub const PropertyId_SpeechServiceResponse_RecognitionBackend: PropertyId = 5003;
 pub const PropertyId_SpeechServiceResponse_SynthesisFirstByteLatencyMs: PropertyId = 5010;
 pub const PropertyId_SpeechServiceResponse_SynthesisFinishLatencyMs: PropertyId = 5011;
 pub const PropertyId_SpeechServiceResponse_SynthesisUnderrunTimeMs: PropertyId = 5012;
+pub const PropertyId_SpeechServiceResponse_SynthesisConnectionLatencyMs: PropertyId = 5013;
+pub const PropertyId_SpeechServiceResponse_SynthesisNetworkLatencyMs: PropertyId = 5014;
+pub const PropertyId_SpeechServiceResponse_SynthesisServiceLatencyMs: PropertyId = 5015;
 pub const PropertyId_CancellationDetails_Reason: PropertyId = 6000;
 pub const PropertyId_CancellationDetails_ReasonText: PropertyId = 6001;
 pub const PropertyId_CancellationDetails_ReasonDetailedText: PropertyId = 6002;
@@ -854,108 +874,29 @@ extern "C" {
         jsonData: *const ::std::os::raw::c_char,
     ) -> AZACHR;
 }
-#[doc = " <summary>"]
-#[doc = " Defines the header of the buffer that returns translation text results. The buffer starts with the header whose structure is"]
-#[doc = " defined below, and then follows the translation results for all required languages."]
-#[doc = " </summary>"]
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _Result_TranslationTextBufferHeader {
-    #[doc = " <summary>"]
-    #[doc = " The total size of the buffer, including translation results."]
-    #[doc = " </summary>"]
-    pub bufferSize: size_t,
-    #[doc = " <summary>"]
-    #[doc = " The number of target languages. This indicates the array size of targetLanguages and translationTexts."]
-    #[doc = " </summary>"]
-    pub numberEntries: size_t,
-    #[doc = " <summary>"]
-    #[doc = " Points to an array of target language names. The size of the array is numberEntries."]
-    #[doc = " </summary>"]
-    pub targetLanguages: *mut *mut ::std::os::raw::c_char,
-    #[doc = " <summary>"]
-    #[doc = " Points to an array of translation texts. The element in the array is the translation text of the target language which has the same index in targetLanguages."]
-    #[doc = " </summary>"]
-    pub translationTexts: *mut *mut ::std::os::raw::c_char,
-}
-#[test]
-fn bindgen_test_layout__Result_TranslationTextBufferHeader() {
-    assert_eq!(
-        ::std::mem::size_of::<_Result_TranslationTextBufferHeader>(),
-        32usize,
-        concat!("Size of: ", stringify!(_Result_TranslationTextBufferHeader))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<_Result_TranslationTextBufferHeader>(),
-        8usize,
-        concat!(
-            "Alignment of ",
-            stringify!(_Result_TranslationTextBufferHeader)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<_Result_TranslationTextBufferHeader>())).bufferSize as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_Result_TranslationTextBufferHeader),
-            "::",
-            stringify!(bufferSize)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<_Result_TranslationTextBufferHeader>())).numberEntries
-                as *const _ as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_Result_TranslationTextBufferHeader),
-            "::",
-            stringify!(numberEntries)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<_Result_TranslationTextBufferHeader>())).targetLanguages
-                as *const _ as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_Result_TranslationTextBufferHeader),
-            "::",
-            stringify!(targetLanguages)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<_Result_TranslationTextBufferHeader>())).translationTexts
-                as *const _ as usize
-        },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_Result_TranslationTextBufferHeader),
-            "::",
-            stringify!(translationTexts)
-        )
-    );
-}
-#[doc = " <summary>"]
-#[doc = " Defines the header of the buffer that returns translation text results. The buffer starts with the header whose structure is"]
-#[doc = " defined below, and then follows the translation results for all required languages."]
-#[doc = " </summary>"]
-pub type Result_TranslationTextBufferHeader = _Result_TranslationTextBufferHeader;
 extern "C" {
-    pub fn translation_text_result_get_translation_text_buffer_header(
+    pub fn intent_recognizer_add_conversational_language_understanding_model(
+        hreco: SPXRECOHANDLE,
+        languageResourceKey: *const ::std::os::raw::c_char,
+        endpoint: *const ::std::os::raw::c_char,
+        projectName: *const ::std::os::raw::c_char,
+        deploymentName: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn translation_text_result_get_translation_count(
         handle: SPXRESULTHANDLE,
-        textBuffer: *mut Result_TranslationTextBufferHeader,
-        lengthPointer: *mut size_t,
+        size: *mut size_t,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn translation_text_result_get_translation(
+        handle: SPXRESULTHANDLE,
+        index: size_t,
+        language: *mut ::std::os::raw::c_char,
+        text: *mut ::std::os::raw::c_char,
+        language_size: *mut size_t,
+        text_size: *mut size_t,
     ) -> AZACHR;
 }
 extern "C" {
@@ -1083,12 +1024,37 @@ pub const Audio_Stream_Container_Format_StreamFormat_Any: Audio_Stream_Container
 #[doc = " Changed in version 1.4.0."]
 #[doc = " </summary>"]
 pub type Audio_Stream_Container_Format = ::std::os::raw::c_uint;
+#[doc = " <summary>"]
+#[doc = " Stream WaveFormat definition for PCM (pulse-code modulated) data in integer format."]
+#[doc = " </summary>"]
+pub const Audio_Stream_Wave_Format_StreamWaveFormat_PCM: Audio_Stream_Wave_Format = 1;
+#[doc = " <summary>"]
+#[doc = " Stream WaveFormat definition for A-law-encoded format."]
+#[doc = " </summary>"]
+pub const Audio_Stream_Wave_Format_StreamWaveFormat_ALAW: Audio_Stream_Wave_Format = 6;
+#[doc = " <summary>"]
+#[doc = " Stream WaveFormat definition for Mu-law-encoded format."]
+#[doc = " </summary>"]
+pub const Audio_Stream_Wave_Format_StreamWaveFormat_MULAW: Audio_Stream_Wave_Format = 7;
+#[doc = " <summary>"]
+#[doc = " Defines supported audio stream wave format in WAV container."]
+#[doc = " </summary>"]
+pub type Audio_Stream_Wave_Format = ::std::os::raw::c_uint;
 extern "C" {
     pub fn audio_stream_format_is_handle_valid(hformat: SPXAUDIOSTREAMFORMATHANDLE) -> bool;
 }
 extern "C" {
     pub fn audio_stream_format_create_from_default_input(
         hformat: *mut SPXAUDIOSTREAMFORMATHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn audio_stream_format_create_from_waveformat(
+        hformat: *mut SPXAUDIOSTREAMFORMATHANDLE,
+        samplesPerSecond: u32,
+        bitsPerSample: u8,
+        channels: u8,
+        waveFormat: Audio_Stream_Wave_Format,
     ) -> AZACHR;
 }
 extern "C" {
@@ -1650,7 +1616,7 @@ pub const AudioProcessingOptions_PresetMicrophoneArrayGeometry_AudioProcessingOp
 pub const AudioProcessingOptions_PresetMicrophoneArrayGeometry_AudioProcessingOptions_PresetMicrophoneArrayGeometry_Custom : AudioProcessingOptions_PresetMicrophoneArrayGeometry = 6 ;
 #[doc = " <summary>"]
 #[doc = " Types of preset microphone array geometries."]
-#[doc = " Check https://docs.microsoft.com/azure/cognitive-services/speech-service/speech-devices-sdk-microphone for details."]
+#[doc = " See [Microphone Array Recommendations](/azure/cognitive-services/speech-service/speech-devices-sdk-microphone) for more details."]
 #[doc = " </summary>"]
 pub type AudioProcessingOptions_PresetMicrophoneArrayGeometry = ::std::os::raw::c_uint;
 pub const AudioProcessingOptions_MicrophoneArrayType_AudioProcessingOptions_MicrophoneArrayType_Linear : AudioProcessingOptions_MicrophoneArrayType = 0 ;
@@ -2016,6 +1982,11 @@ pub const Speech_Synthesis_Output_Format_SpeechSynthesisOutputFormat_Raw44100Hz1
     Speech_Synthesis_Output_Format = 36;
 pub const Speech_Synthesis_Output_Format_SpeechSynthesisOutputFormat_Riff44100Hz16BitMonoPcm:
     Speech_Synthesis_Output_Format = 37;
+#[doc = " amr-wb-16000hz"]
+#[doc = " AMR-WB audio at 16kHz sampling rate."]
+#[doc = " (Added in 1.24.0)"]
+pub const Speech_Synthesis_Output_Format_SpeechSynthesisOutputFormat_AmrWb16000Hz:
+    Speech_Synthesis_Output_Format = 38;
 pub type Speech_Synthesis_Output_Format = ::std::os::raw::c_uint;
 pub const SpeechConfig_ServicePropertyChannel_SpeechConfig_ServicePropertyChannel_UriQueryParameter : SpeechConfig_ServicePropertyChannel = 0 ;
 pub const SpeechConfig_ServicePropertyChannel_SpeechConfig_ServicePropertyChannel_HttpHeader:
@@ -2130,6 +2101,13 @@ extern "C" {
         hconfig: SPXSPEECHCONFIGHANDLE,
         index: u32,
         hmodel: *mut SPXSPEECHRECOMODELHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn hybrid_speech_config_create(
+        hconfig: *mut SPXSPEECHCONFIGHANDLE,
+        hcloudSpeechConfig: SPXSPEECHCONFIGHANDLE,
+        hembeddedSpeechConfig: SPXSPEECHCONFIGHANDLE,
     ) -> AZACHR;
 }
 extern "C" {
@@ -2298,15 +2276,6 @@ extern "C" {
 }
 extern "C" {
     pub fn recognizer_event_handle_release(hevent: SPXEVENTHANDLE) -> AZACHR;
-}
-extern "C" {
-    pub fn recognizer_enable(hreco: SPXRECOHANDLE) -> AZACHR;
-}
-extern "C" {
-    pub fn recognizer_disable(hreco: SPXRECOHANDLE) -> AZACHR;
-}
-extern "C" {
-    pub fn recognizer_is_enabled(hreco: SPXRECOHANDLE, pfEnabled: *mut bool) -> AZACHR;
 }
 extern "C" {
     pub fn recognizer_get_property_bag(hreco: SPXRECOHANDLE, hpropbag: *mut AZAC_HANDLE) -> AZACHR;
@@ -2685,15 +2654,6 @@ extern "C" {
     pub fn synthesizer_event_handle_release(hevent: SPXEVENTHANDLE) -> AZACHR;
 }
 extern "C" {
-    pub fn synthesizer_enable(hsynth: SPXSYNTHHANDLE) -> AZACHR;
-}
-extern "C" {
-    pub fn synthesizer_disable(hsynth: SPXSYNTHHANDLE) -> AZACHR;
-}
-extern "C" {
-    pub fn synthesizer_is_enabled(hsynth: SPXSYNTHHANDLE, pfEnabled: *mut bool) -> AZACHR;
-}
-extern "C" {
     pub fn synthesizer_get_property_bag(
         hsynth: SPXSYNTHHANDLE,
         hpropbag: *mut AZAC_HANDLE,
@@ -2890,6 +2850,13 @@ extern "C" {
         pTextOffset: *mut u32,
         pWordLength: *mut u32,
         pBoundaryType: *mut SpeechSynthesis_BoundaryType,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn synthesizer_event_get_result_id(
+        hEvent: SPXEVENTHANDLE,
+        resultId: *mut ::std::os::raw::c_char,
+        resultIdLength: u32,
     ) -> AZACHR;
 }
 extern "C" {

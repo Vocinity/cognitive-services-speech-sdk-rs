@@ -8,14 +8,14 @@ use std::{
 };
 
 #[cfg(not(target_os = "macos"))]
-const LINUX_SDK_URL: &str  = "https://github.com/jabber-tools/cognitive-services-speech-sdk-rs-files/blob/main/SpeechSDK/1.22.0/linux/SpeechSDK-Linux-1.22.0.tar.gz?raw=true";
-
+//const LINUX_SDK_URL: &str  = "https://github.com/jabber-tools/cognitive-services-speech-sdk-rs-files/blob/main/SpeechSDK/1.22.0/linux/SpeechSDK-Linux-1.22.0.tar.gz?raw=true";
 #[cfg(not(target_os = "macos"))]
-fn download_file(url: &str, dst: &str) {
-    Command::new("curl")
-        .args(&["-SL", url, "-o", dst])
-        .status()
-        .expect("failed to download Speech SDK!");
+fn download_file(/*url: &str,*/ dst: &str) {
+    //Command::new("curl")
+    //.args(&["-SL", url, "-o", dst])
+    //.status()
+    //.expect("failed to download Speech SDK!");
+    fs::copy("./SpeechSDK/SpeechSDK-Linux.tar.gz", dst);
 }
 
 #[cfg(not(target_os = "macos"))]
@@ -56,7 +56,7 @@ fn main() {
     if renew {
         let dw_file = out_path.join("linux.sdk");
         let sdk_file = dw_file.to_str().unwrap();
-        download_file(LINUX_SDK_URL, sdk_file);
+        download_file(/*LINUX_SDK_URL,*/ sdk_file);
         let args = [
             "--strip",
             "1",
