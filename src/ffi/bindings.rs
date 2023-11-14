@@ -545,6 +545,19 @@ extern "C" {
 extern "C" {
     pub fn diagnostics_logmessage_set_filters(filters: *const ::std::os::raw::c_char) -> AZACHR;
 }
+pub type DIAGNOSTICS_EVENTSOURCE_CALLBACK_FUNC = ::std::option::Option<
+    unsafe extern "C" fn(logLine: *const ::std::os::raw::c_char, level: ::std::os::raw::c_int),
+>;
+extern "C" {
+    pub fn diagnostics_eventsource_logmessage_set_callback(
+        callback: DIAGNOSTICS_EVENTSOURCE_CALLBACK_FUNC,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn diagnostics_eventsource_logmessage_set_filters(
+        filters: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
 extern "C" {
     pub fn diagnostics_log_memory_start_logging();
 }
@@ -688,6 +701,7 @@ pub type SPXPARTICIPANTHANDLE = AZAC_HANDLE;
 pub type SPXAUTODETECTSOURCELANGCONFIGHANDLE = AZAC_HANDLE;
 pub type SPXSOURCELANGCONFIGHANDLE = AZAC_HANDLE;
 pub type SPXCONVERSATIONHANDLE = AZAC_HANDLE;
+pub type SPXMEETINGHANDLE = AZAC_HANDLE;
 pub type SPXCONVERSATIONTRANSLATORHANDLE = AZAC_HANDLE;
 pub type SPXVOICEPROFILECLIENTHANDLE = AZAC_HANDLE;
 pub type SPXVOICEPROFILEHANDLE = AZAC_HANDLE;
@@ -777,6 +791,10 @@ pub const PropertyId_SpeechServiceResponse_StablePartialResultThreshold: Propert
 pub const PropertyId_SpeechServiceResponse_OutputFormatOption: PropertyId = 4006;
 pub const PropertyId_SpeechServiceResponse_RequestSnr: PropertyId = 4007;
 pub const PropertyId_SpeechServiceResponse_TranslationRequestStablePartialResult: PropertyId = 4100;
+pub const PropertyId_SpeechServiceResponse_RequestWordBoundary: PropertyId = 4200;
+pub const PropertyId_SpeechServiceResponse_RequestPunctuationBoundary: PropertyId = 4201;
+pub const PropertyId_SpeechServiceResponse_RequestSentenceBoundary: PropertyId = 4202;
+pub const PropertyId_SpeechServiceResponse_SynthesisEventsSyncToAudio: PropertyId = 4210;
 pub const PropertyId_SpeechServiceResponse_JsonResult: PropertyId = 5000;
 pub const PropertyId_SpeechServiceResponse_JsonErrorDetails: PropertyId = 5001;
 pub const PropertyId_SpeechServiceResponse_RecognitionLatencyMs: PropertyId = 5002;
@@ -816,9 +834,13 @@ pub const PropertyId_PronunciationAssessment_Granularity: PropertyId = 12003;
 pub const PropertyId_PronunciationAssessment_EnableMiscue: PropertyId = 12005;
 pub const PropertyId_PronunciationAssessment_PhonemeAlphabet: PropertyId = 12006;
 pub const PropertyId_PronunciationAssessment_NBestPhonemeCount: PropertyId = 12007;
+pub const PropertyId_PronunciationAssessment_EnableProsodyAssessment: PropertyId = 12008;
 pub const PropertyId_PronunciationAssessment_Json: PropertyId = 12009;
 pub const PropertyId_PronunciationAssessment_Params: PropertyId = 12010;
+pub const PropertyId_PronunciationAssessment_ContentTopic: PropertyId = 12020;
 pub const PropertyId_SpeakerRecognition_Api_Version: PropertyId = 13001;
+pub const PropertyId_SpeechTranslation_ModelName: PropertyId = 13100;
+pub const PropertyId_SpeechTranslation_ModelKey: PropertyId = 13101;
 pub type PropertyId = ::std::os::raw::c_uint;
 pub const _ParticipantChangedReason_JoinedConversation: _ParticipantChangedReason = 0;
 pub const _ParticipantChangedReason_LeftConversation: _ParticipantChangedReason = 1;
@@ -856,6 +878,13 @@ extern "C" {
         hreco: SPXRECOHANDLE,
         intentId: *const ::std::os::raw::c_char,
         htrigger: SPXTRIGGERHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn intent_recognizer_add_intent_with_model_id(
+        hreco: SPXRECOHANDLE,
+        htrigger: SPXTRIGGERHANDLE,
+        modelId: *const ::std::os::raw::c_char,
     ) -> AZACHR;
 }
 extern "C" {
@@ -936,13 +965,46 @@ extern "C" {
     pub fn pattern_matching_model_handle_is_valid(hlumodel: SPXLUMODELHANDLE) -> bool;
 }
 extern "C" {
+    pub fn pattern_matching_model_create(
+        hlumodel: *mut SPXLUMODELHANDLE,
+        hIntentReco: SPXRECOHANDLE,
+        id: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
+extern "C" {
     pub fn pattern_matching_model_create_from_id(
         hlumodel: *mut SPXLUMODELHANDLE,
         id: *const ::std::os::raw::c_char,
     ) -> AZACHR;
 }
+pub type PATTERN_MATCHING_MODEL_GET_STR_FROM_INDEX = ::std::option::Option<
+    unsafe extern "C" fn(
+        context: *mut ::std::os::raw::c_void,
+        index: size_t,
+        str_: *mut *const ::std::os::raw::c_char,
+        size: *mut size_t,
+    ) -> AZACHR,
+>;
 extern "C" {
-    pub fn pattern_matching_model__handle_release(hlumodel: SPXLUMODELHANDLE) -> AZACHR;
+    pub fn pattern_matching_model_add_entity(
+        hlumodel: SPXLUMODELHANDLE,
+        id: *const ::std::os::raw::c_char,
+        type_: i32,
+        mode: i32,
+        numPhrases: size_t,
+        phraseContext: *mut ::std::os::raw::c_void,
+        phraseGetter: PATTERN_MATCHING_MODEL_GET_STR_FROM_INDEX,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn pattern_matching_model_add_intent(
+        hlumodel: SPXLUMODELHANDLE,
+        id: *const ::std::os::raw::c_char,
+        priority: u32,
+        numPhrases: size_t,
+        phraseContext: *mut ::std::os::raw::c_void,
+        phraseGetter: PATTERN_MATCHING_MODEL_GET_STR_FROM_INDEX,
+    ) -> AZACHR;
 }
 extern "C" {
     pub fn language_understanding_model_handle_is_valid(hlumodel: SPXLUMODELHANDLE) -> bool;
@@ -1122,6 +1184,7 @@ pub const Result_NoMatchReason_NoMatchReason_NotRecognized: Result_NoMatchReason
 pub const Result_NoMatchReason_NoMatchReason_InitialSilenceTimeout: Result_NoMatchReason = 2;
 pub const Result_NoMatchReason_NoMatchReason_InitialBabbleTimeout: Result_NoMatchReason = 3;
 pub const Result_NoMatchReason_NoMatchReason_KeywordNotRecognized: Result_NoMatchReason = 4;
+pub const Result_NoMatchReason_NoMatchReason_EndSilenceTimeout: Result_NoMatchReason = 5;
 pub type Result_NoMatchReason = ::std::os::raw::c_uint;
 pub const Synthesis_VoiceType_SynthesisVoiceType_OnlineNeural: Synthesis_VoiceType = 1;
 pub const Synthesis_VoiceType_SynthesisVoiceType_OnlineStandard: Synthesis_VoiceType = 2;
@@ -1833,6 +1896,7 @@ pub const AUDIO_INPUT_PROCESSING_DISABLE_NOISE_SUPPRESSION: ::std::os::raw::c_in
 pub const AUDIO_INPUT_PROCESSING_DISABLE_GAIN_CONTROL: ::std::os::raw::c_int = 8;
 pub const AUDIO_INPUT_PROCESSING_DISABLE_ECHO_CANCELLATION: ::std::os::raw::c_int = 16;
 pub const AUDIO_INPUT_PROCESSING_ENABLE_VOICE_ACTIVITY_DETECTION: ::std::os::raw::c_int = 32;
+pub const AUDIO_INPUT_PROCESSING_ENABLE_V2: ::std::os::raw::c_int = 64;
 extern "C" {
     pub fn audio_processing_options_is_handle_valid(
         hoptions: SPXAUDIOPROCESSINGOPTIONSHANDLE,
@@ -2082,6 +2146,34 @@ extern "C" {
     ) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
+    pub fn speech_translation_model_handle_release(hmodel: SPXSPEECHRECOMODELHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn speech_translation_model_get_name(
+        hmodel: SPXSPEECHRECOMODELHANDLE,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn speech_translation_model_get_source_languages(
+        hmodel: SPXSPEECHRECOMODELHANDLE,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn speech_translation_model_get_target_languages(
+        hmodel: SPXSPEECHRECOMODELHANDLE,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn speech_translation_model_get_path(
+        hmodel: SPXSPEECHRECOMODELHANDLE,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn speech_translation_model_get_version(
+        hmodel: SPXSPEECHRECOMODELHANDLE,
+    ) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
     pub fn embedded_speech_config_create(hconfig: *mut SPXSPEECHCONFIGHANDLE) -> AZACHR;
 }
 extern "C" {
@@ -2098,6 +2190,19 @@ extern "C" {
 }
 extern "C" {
     pub fn embedded_speech_config_get_speech_reco_model(
+        hconfig: SPXSPEECHCONFIGHANDLE,
+        index: u32,
+        hmodel: *mut SPXSPEECHRECOMODELHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn embedded_speech_config_get_num_speech_translation_models(
+        hconfig: SPXSPEECHCONFIGHANDLE,
+        numModels: *mut u32,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn embedded_speech_config_get_speech_translation_model(
         hconfig: SPXSPEECHCONFIGHANDLE,
         index: u32,
         hmodel: *mut SPXSPEECHRECOMODELHANDLE,
@@ -2234,6 +2339,23 @@ extern "C" {
 extern "C" {
     pub fn recognizer_create_conversation_transcriber_from_config(
         phreco: *mut SPXRECOHANDLE,
+        hspeechconfig: SPXSPEECHCONFIGHANDLE,
+        haudioInput: SPXAUDIOCONFIGHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn recognizer_create_conversation_transcriber_from_auto_detect_source_lang_config(
+        phreco: *mut SPXRECOHANDLE,
+        hspeechconfig: SPXSPEECHCONFIGHANDLE,
+        hautoDetectSourceLangConfig: SPXAUTODETECTSOURCELANGCONFIGHANDLE,
+        haudioInput: SPXAUDIOCONFIGHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn recognizer_create_conversation_transcriber_from_source_lang_config(
+        phreco: *mut SPXRECOHANDLE,
+        hspeechconfig: SPXSPEECHCONFIGHANDLE,
+        hSourceLangConfig: SPXSOURCELANGCONFIGHANDLE,
         haudioInput: SPXAUDIOCONFIGHANDLE,
     ) -> AZACHR;
 }
@@ -2245,6 +2367,18 @@ extern "C" {
 }
 extern "C" {
     pub fn recognizer_leave_conversation(hreco: SPXRECOHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn recognizer_create_meeting_transcriber_from_config(
+        phreco: *mut SPXRECOHANDLE,
+        haudioInput: SPXAUDIOCONFIGHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn recognizer_join_meeting(hmeeting: SPXMEETINGHANDLE, hreco: SPXRECOHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn recognizer_leave_meeting(hreco: SPXRECOHANDLE) -> AZACHR;
 }
 extern "C" {
     pub fn transcriber_get_participants_list(
@@ -3396,14 +3530,96 @@ extern "C" {
     ) -> AZACHR;
 }
 extern "C" {
-    pub fn conversation_transcription_result_get_user_id(
+    pub fn conversation_transcription_result_get_speaker_id(
+        hresult: SPXRESULTHANDLE,
+        pszSpeakerId: *mut ::std::os::raw::c_char,
+        cchSpeakerId: u32,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_create_from_config(
+        phmeeting: *mut SPXMEETINGHANDLE,
+        hspeechconfig: SPXSPEECHCONFIGHANDLE,
+        id: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_update_participant_by_user_id(
+        hconv: SPXMEETINGHANDLE,
+        add: bool,
+        userId: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_update_participant_by_user(
+        hconv: SPXMEETINGHANDLE,
+        add: bool,
+        huser: SPXUSERHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_update_participant(
+        hconv: SPXMEETINGHANDLE,
+        add: bool,
+        hparticipant: SPXPARTICIPANTHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_get_meeting_id(
+        hconv: SPXMEETINGHANDLE,
+        id: *mut ::std::os::raw::c_char,
+        size: size_t,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_end_meeting(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_get_property_bag(hconv: SPXMEETINGHANDLE, phpropbag: *mut AZAC_HANDLE)
+        -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_release_handle(handle: AZAC_HANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_start_meeting(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_delete_meeting(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_lock_meeting(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_unlock_meeting(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_mute_all_participants(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_unmute_all_participants(hconv: SPXMEETINGHANDLE) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_mute_participant(
+        hconv: SPXMEETINGHANDLE,
+        participantId: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_unmute_participant(
+        hconv: SPXMEETINGHANDLE,
+        participantId: *const ::std::os::raw::c_char,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn meeting_transcription_result_get_user_id(
         hresult: SPXRESULTHANDLE,
         pszUserId: *mut ::std::os::raw::c_char,
         cchUserId: u32,
     ) -> AZACHR;
 }
 extern "C" {
-    pub fn conversation_transcription_result_get_utterance_id(
+    pub fn meeting_transcription_result_get_utterance_id(
         hresult: SPXRESULTHANDLE,
         pszUtteranceId: *mut ::std::os::raw::c_char,
         cchUtteranceId: u32,
@@ -3618,6 +3834,13 @@ extern "C" {
         hevent: SPXEVENTHANDLE,
         index: ::std::os::raw::c_int,
         phparticipant: *mut SPXPARTICIPANTHANDLE,
+    ) -> AZACHR;
+}
+extern "C" {
+    pub fn conversation_translator_result_get_user_id(
+        hresult: SPXRESULTHANDLE,
+        pszUserId: *mut ::std::os::raw::c_char,
+        cchUserId: u32,
     ) -> AZACHR;
 }
 extern "C" {
