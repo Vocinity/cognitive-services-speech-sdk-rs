@@ -15,7 +15,7 @@ use crate::ffi::{
 };
 use crate::speech::{
     AutoDetectSourceLanguageConfig, SpeechConfig, SpeechSynthesisBookmarkEvent,
-    SpeechSynthesisEvent, SpeechSynthesisResult, SpeechSynthesisVisemeEvent,
+    SpeechSynthesisCanceledEvent, SpeechSynthesisEvent, SpeechSynthesisResult, SpeechSynthesisVisemeEvent,
     SpeechSynthesisWordBoundaryEvent, SynthesisVoicesResult,
 };
 use log::*;
@@ -32,7 +32,7 @@ pub struct SpeechSynthesizer {
     synthesizer_started_cb: Option<Box<dyn Fn(SpeechSynthesisEvent) + Send>>,
     synthesizer_synthesizing_cb: Option<Box<dyn Fn(SpeechSynthesisEvent) + Send>>,
     synthesizer_completed_cb: Option<Box<dyn Fn(SpeechSynthesisEvent) + Send>>,
-    synthesizer_canceled_cb: Option<Box<dyn Fn(SpeechSynthesisEvent) + Send>>,
+    synthesizer_canceled_cb: Option<Box<dyn Fn(SpeechSynthesisCanceledEvent) + Send>>,
     synthesizer_word_boundary_cb: Option<Box<dyn Fn(SpeechSynthesisWordBoundaryEvent) + Send>>,
     synthesizer_viseme_cb: Option<Box<dyn Fn(SpeechSynthesisVisemeEvent) + Send>>,
     synthesizer_bookmark_cb: Option<Box<dyn Fn(SpeechSynthesisBookmarkEvent) + Send>>,
@@ -280,7 +280,7 @@ impl SpeechSynthesizer {
 
     pub fn set_synthesizer_canceled_cb<F>(&mut self, f: F) -> Result<()>
     where
-        F: Fn(SpeechSynthesisEvent) + 'static + Send,
+        F: Fn(SpeechSynthesisCanceledEvent) + 'static + Send,
     {
         self.synthesizer_canceled_cb = Some(Box::new(f));
         unsafe {
@@ -434,7 +434,7 @@ impl SpeechSynthesizer {
         let speech_synthesizer = &mut *(pvContext as *mut SpeechSynthesizer);
         if let Some(cb) = &speech_synthesizer.synthesizer_canceled_cb {
             trace!("synthesizer_canceled_cb defined");
-            match SpeechSynthesisEvent::from_handle(hevent) {
+            match SpeechSynthesisCanceledEvent::from_handle(hevent) {
                 Ok(event) => {
                     trace!("calling cb with event {:?}", event);
                     cb(event);
