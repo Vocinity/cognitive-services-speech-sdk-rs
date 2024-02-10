@@ -353,7 +353,7 @@ impl SpeechConfig {
         self.get_property(PropertyId::SpeechServiceConnectionSynthLanguage)
     }
 
-    pub fn set_get_speech_synthesis_language(
+    pub fn set_speech_synthesis_language(
         &mut self,
         speech_synthesis_language: String,
     ) -> Result<()> {
@@ -367,7 +367,7 @@ impl SpeechConfig {
         self.get_property(PropertyId::SpeechServiceConnectionSynthVoice)
     }
 
-    pub fn set_get_speech_synthesis_voice_name(
+    pub fn set_speech_synthesis_voice_name(
         &mut self,
         speech_synthesis_voice_name: String,
     ) -> Result<()> {
@@ -381,7 +381,7 @@ impl SpeechConfig {
         self.get_property(PropertyId::SpeechServiceConnectionSynthOutputFormat)
     }
 
-    pub fn set_get_speech_synthesis_output_format(
+    pub fn set_speech_synthesis_output_format(
         &mut self,
         speech_synthesis_output_format: String,
     ) -> Result<()> {
