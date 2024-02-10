@@ -157,7 +157,7 @@ impl EmbeddedSpeechConfig {
     /// Sets the speech synthesis output format (e.g. Riff16Khz16BitMonoPcm).
     pub fn set_speech_synthesis_output_format<F: Into<String>>(&mut self, format: F) -> Result<()> {
         self.config
-            .set_get_speech_synthesis_output_format(format.into())
+            .set_speech_synthesis_output_format(format.into())
     }
 
     /// Gets the speech synthesis output format.
