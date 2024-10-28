@@ -133,46 +133,75 @@ pub enum SpeechSynthesisOutputFormat {
 
 impl fmt::Display for SpeechSynthesisOutputFormat {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let str =
-            match self {
-                SpeechSynthesisOutputFormat::Raw8Khz8BitMonoMULaw => "raw-8khz-8bit-mono-mulaw",
-                SpeechSynthesisOutputFormat::Riff16Khz16KbpsMonoSiren => "riff-16khz-16kbps-mono-siren",
-                SpeechSynthesisOutputFormat::Audio16Khz16KbpsMonoSiren => "audio-16khz-16kbps-mono-siren",
-                SpeechSynthesisOutputFormat::Audio16Khz32KBitRateMonoMp3 => "audio-16khz-32kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Audio16Khz128KBitRateMonoMp3 => "audio-16khz-128kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Audio16Khz64KBitRateMonoMp3 => "audio-16khz-64kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Audio24Khz48KBitRateMonoMp3 => "audio-24khz-48kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Audio24Khz96KBitRateMonoMp3 => "audio-24khz-96kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Audio24Khz160KBitRateMonoMp3 => "audio-24khz-160kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Raw16Khz16BitMonoTrueSilk => "raw-16khz-16bit-mono-truesilk",
-                SpeechSynthesisOutputFormat::Riff16Khz16BitMonoPcm => "riff-16khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Riff8Khz16BitMonoPcm => "riff-8khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Riff24Khz16BitMonoPcm => "riff-24khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Riff8Khz8BitMonoMULaw => "riff-8khz-8bit-mono-mulaw",
-                SpeechSynthesisOutputFormat::Raw16Khz16BitMonoPcm => "raw-16khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Raw24Khz16BitMonoPcm => "raw-24khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Raw8Khz16BitMonoPcm => "raw-8khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Ogg16Khz16BitMonoOpus => "ogg-16khz-16bit-mono-opus",
-                SpeechSynthesisOutputFormat::Ogg24Khz16BitMonoOpus => "ogg-24khz-16bit-mono-opus",
-                SpeechSynthesisOutputFormat::Raw48Khz16BitMonoPcm => "raw-48khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Riff48Khz16BitMonoPcm => "riff-48khz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Audio48Khz96KBitRateMonoMp3 => "audio-48khz-96kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Audio48Khz192KBitRateMonoMp3 => "audio-48khz-192kbitrate-mono-mp3",
-                SpeechSynthesisOutputFormat::Ogg48Khz16BitMonoOpus => "ogg-48khz-16bit-mono-opus",
-                SpeechSynthesisOutputFormat::Webm16Khz16BitMonoOpus => "webm-16khz-16bit-mono-opus",
-                SpeechSynthesisOutputFormat::Webm24Khz16BitMonoOpus => "webm-24khz-16bit-mono-opus",
-                SpeechSynthesisOutputFormat::Raw24Khz16BitMonoTrueSilk => "raw-24khz-16bit-mono-truesilk",
-                SpeechSynthesisOutputFormat::Raw8Khz8BitMonoALaw => "raw-8khz-8bit-mono-alaw",
-                SpeechSynthesisOutputFormat::Riff8Khz8BitMonoALaw => "riff-8khz-8bit-mono-alaw",
-                SpeechSynthesisOutputFormat::Webm24Khz16Bit24KbpsMonoOpus => "webm-24khz-16bit-24kbps-mono-opus",
-                SpeechSynthesisOutputFormat::Audio16Khz16Bit32KbpsMonoOpus => "audio-16khz-16bit-32kbps-mono-opus",
-                SpeechSynthesisOutputFormat::Audio24Khz16Bit48KbpsMonoOpus => "audio-24khz-16bit-48kbps-mono-opus",
-                SpeechSynthesisOutputFormat::Audio24Khz16Bit24KbpsMonoOpus => "audio-24khz-16bit-24kbps-mono-opus",
-                SpeechSynthesisOutputFormat::Raw22050Hz16BitMonoPcm => "raw-22050hz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Riff22050Hz16BitMonoPcm => "riff-22050hz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Raw44100Hz16BitMonoPcm => "raw-44100hz-16bit-mono-pcm",
-                SpeechSynthesisOutputFormat::Riff44100Hz16BitMonoPcm => "riff-44100hz-16bit-mono-pcm",
-            };
+        let str = match self {
+            SpeechSynthesisOutputFormat::Raw8Khz8BitMonoMULaw => "raw-8khz-8bit-mono-mulaw",
+            SpeechSynthesisOutputFormat::Riff16Khz16KbpsMonoSiren => "riff-16khz-16kbps-mono-siren",
+            SpeechSynthesisOutputFormat::Audio16Khz16KbpsMonoSiren => {
+                "audio-16khz-16kbps-mono-siren"
+            }
+            SpeechSynthesisOutputFormat::Audio16Khz32KBitRateMonoMp3 => {
+                "audio-16khz-32kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Audio16Khz128KBitRateMonoMp3 => {
+                "audio-16khz-128kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Audio16Khz64KBitRateMonoMp3 => {
+                "audio-16khz-64kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Audio24Khz48KBitRateMonoMp3 => {
+                "audio-24khz-48kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Audio24Khz96KBitRateMonoMp3 => {
+                "audio-24khz-96kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Audio24Khz160KBitRateMonoMp3 => {
+                "audio-24khz-160kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Raw16Khz16BitMonoTrueSilk => {
+                "raw-16khz-16bit-mono-truesilk"
+            }
+            SpeechSynthesisOutputFormat::Riff16Khz16BitMonoPcm => "riff-16khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Riff8Khz16BitMonoPcm => "riff-8khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Riff24Khz16BitMonoPcm => "riff-24khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Riff8Khz8BitMonoMULaw => "riff-8khz-8bit-mono-mulaw",
+            SpeechSynthesisOutputFormat::Raw16Khz16BitMonoPcm => "raw-16khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Raw24Khz16BitMonoPcm => "raw-24khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Raw8Khz16BitMonoPcm => "raw-8khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Ogg16Khz16BitMonoOpus => "ogg-16khz-16bit-mono-opus",
+            SpeechSynthesisOutputFormat::Ogg24Khz16BitMonoOpus => "ogg-24khz-16bit-mono-opus",
+            SpeechSynthesisOutputFormat::Raw48Khz16BitMonoPcm => "raw-48khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Riff48Khz16BitMonoPcm => "riff-48khz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Audio48Khz96KBitRateMonoMp3 => {
+                "audio-48khz-96kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Audio48Khz192KBitRateMonoMp3 => {
+                "audio-48khz-192kbitrate-mono-mp3"
+            }
+            SpeechSynthesisOutputFormat::Ogg48Khz16BitMonoOpus => "ogg-48khz-16bit-mono-opus",
+            SpeechSynthesisOutputFormat::Webm16Khz16BitMonoOpus => "webm-16khz-16bit-mono-opus",
+            SpeechSynthesisOutputFormat::Webm24Khz16BitMonoOpus => "webm-24khz-16bit-mono-opus",
+            SpeechSynthesisOutputFormat::Raw24Khz16BitMonoTrueSilk => {
+                "raw-24khz-16bit-mono-truesilk"
+            }
+            SpeechSynthesisOutputFormat::Raw8Khz8BitMonoALaw => "raw-8khz-8bit-mono-alaw",
+            SpeechSynthesisOutputFormat::Riff8Khz8BitMonoALaw => "riff-8khz-8bit-mono-alaw",
+            SpeechSynthesisOutputFormat::Webm24Khz16Bit24KbpsMonoOpus => {
+                "webm-24khz-16bit-24kbps-mono-opus"
+            }
+            SpeechSynthesisOutputFormat::Audio16Khz16Bit32KbpsMonoOpus => {
+                "audio-16khz-16bit-32kbps-mono-opus"
+            }
+            SpeechSynthesisOutputFormat::Audio24Khz16Bit48KbpsMonoOpus => {
+                "audio-24khz-16bit-48kbps-mono-opus"
+            }
+            SpeechSynthesisOutputFormat::Audio24Khz16Bit24KbpsMonoOpus => {
+                "audio-24khz-16bit-24kbps-mono-opus"
+            }
+            SpeechSynthesisOutputFormat::Raw22050Hz16BitMonoPcm => "raw-22050hz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Riff22050Hz16BitMonoPcm => "riff-22050hz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Raw44100Hz16BitMonoPcm => "raw-44100hz-16bit-mono-pcm",
+            SpeechSynthesisOutputFormat::Riff44100Hz16BitMonoPcm => "riff-44100hz-16bit-mono-pcm",
+        };
         write!(f, "{}", str)
     }
 }

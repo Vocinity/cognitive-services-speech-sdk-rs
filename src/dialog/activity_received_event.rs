@@ -10,7 +10,7 @@ use crate::ffi::{
 };
 use std::ffi::CStr;
 use std::mem::MaybeUninit;
-use std::os::raw::{c_char, c_ulong};
+use std::os::raw::c_char;
 
 /// Event passed into callback registered by *DialogServiceConnector::set_activity_received_cb*.
 #[derive(Debug)]
@@ -20,16 +20,19 @@ pub struct ActivityReceivedEvent {
 }
 
 impl ActivityReceivedEvent {
-    pub fn from_handle(handle: SPXEVENTHANDLE) -> Result<ActivityReceivedEvent> {
+    /// # Safety
+    /// `handle` must be a valid handle to a live activity received event.
+    pub unsafe fn from_handle(handle: SPXEVENTHANDLE) -> Result<ActivityReceivedEvent> {
         unsafe {
-            let mut size: c_ulong = MaybeUninit::uninit().assume_init();
+            let mut size = 0;
             let mut ret = dialog_service_connector_activity_received_event_get_activity_size(
                 handle, &mut size,
             );
             convert_err(ret, "ActivityReceivedEvent::from_handle(get size) error")?;
+
             // cannot initiate array with dynamic size (i.e. [0u8; size + 1] )
             // -> allocate vector and convert it to slice
-            let mut buf_vec = vec![0u8; size as usize + 1];
+            let mut buf_vec = vec![0u8; size + 1];
             let c_buf: *mut c_char = &mut buf_vec[..] as *const _ as *mut c_char;
             ret =
                 dialog_service_connector_activity_received_event_get_activity(handle, c_buf, size);
@@ -55,13 +58,13 @@ impl ActivityReceivedEvent {
 
     pub fn get_audio(&self) -> Result<PullAudioOutputStream> {
         unsafe {
-            let mut handle: SPXAUDIOSTREAMHANDLE = MaybeUninit::uninit().assume_init();
+            let mut handle: MaybeUninit<SPXAUDIOSTREAMHANDLE> = MaybeUninit::uninit();
             let ret = dialog_service_connector_activity_received_event_get_audio(
                 self.handle.inner(),
-                &mut handle,
+                handle.as_mut_ptr(),
             );
             convert_err(ret, "ActivityReceivedEvent.get_audio error")?;
-            PullAudioOutputStream::from_handle(handle)
+            PullAudioOutputStream::from_handle(handle.assume_init())
         }
     }
 }

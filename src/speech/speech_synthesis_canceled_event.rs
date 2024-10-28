@@ -1,12 +1,10 @@
 use crate::common::{CancellationErrorCode, CancellationReason, PropertyId};
 use crate::error::{convert_err, Result};
 use crate::ffi::{
-    synth_result_get_canceled_error_code, synth_result_get_reason_canceled, Result_CancellationErrorCode,
-    Result_CancellationReason, SPXEVENTHANDLE,
+    synth_result_get_canceled_error_code, synth_result_get_reason_canceled, SPXEVENTHANDLE,
 };
 use crate::speech::SpeechSynthesisEvent;
 use log::*;
-use std::mem::MaybeUninit;
 
 /// Synthesis event extending *SpeechSynthesisEvent* passed into callback *set_canceled_cb*.
 #[derive(Debug)]
@@ -19,17 +17,18 @@ pub struct SpeechSynthesisCanceledEvent {
 
 impl SpeechSynthesisCanceledEvent {
     pub fn from_handle(handle: SPXEVENTHANDLE) -> Result<SpeechSynthesisCanceledEvent> {
-        let base = SpeechSynthesisEvent::from_handle(handle)?;
         unsafe {
-            let mut reason: Result_CancellationReason = MaybeUninit::uninit().assume_init();
+            let base = SpeechSynthesisEvent::from_handle(handle)?;
+            let mut reason = 0;
             let ret = synth_result_get_reason_canceled(base.result.handle.inner(), &mut reason);
             convert_err(
                 ret,
                 "SpeechSynthesisCanceledEvent::from_handle(synth_result_get_reason_canceled) error",
             )?;
 
-            let mut error_code: Result_CancellationErrorCode = MaybeUninit::uninit().assume_init();
-            let ret = synth_result_get_canceled_error_code(base.result.handle.inner(), &mut error_code);
+            let mut error_code = 0;
+            let ret =
+                synth_result_get_canceled_error_code(base.result.handle.inner(), &mut error_code);
             convert_err(
                 ret,
                 "SpeechSynthesisCanceledEvent::from_handle(synth_result_get_canceled_error_code) error",
