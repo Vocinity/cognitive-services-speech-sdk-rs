@@ -1,7 +1,7 @@
 use std::fmt;
 
 /// SpeechSynthesisOutputFormat defines the possible speech synthesis output audio formats.
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
 pub enum SpeechSynthesisOutputFormat {
     /// Raw8Khz8BitMonoMULaw stands for raw-8khz-8bit-mono-mulaw
     Raw8Khz8BitMonoMULaw = 1,
